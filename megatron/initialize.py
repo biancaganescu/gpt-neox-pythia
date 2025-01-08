@@ -59,9 +59,11 @@ def initialize_megatron(neox_args, allow_no_cuda=False):
         or neox_args.scaled_masked_softmax_fusion
         or neox_args.rope_fusion
     ):
+        print("LOAD 1")
         fused_kernels.load(neox_args)
+        print("LOAD 2")
         fused_kernels.load_fused_kernels()
-
+        print("LOAD 3")
     if neox_args.lazy_mpu_init:
         neox_args.use_cpu_initialization = True
         # delayed initialization of DDP-related stuff
