@@ -1,0 +1,104 @@
+{
+  # parallelism settings
+  "pipe-parallel-size": 0,
+  "model-parallel-size": 1,
+
+  # model settings
+  "num-layers": 6,
+  "hidden-size": 128,
+  "num-attention-heads": 4,
+  "seq-length": 128,
+  "max-position-embeddings": 128,
+  "pos-emb": "rotary",
+  "rotary-pct": 0.25,
+  "no-weight-tying": true,
+  "gpt-j-residual": true,
+  "output-layer-parallelism": "column",
+  
+  "attention-config": [[["global"], 6]],
+
+  "scaled-upper-triang-masked-softmax-fusion": true,
+  "bias-gelu-fusion": true,
+
+  # init methods
+  "init_method": "small_init",
+  "output_layer_init_method": "wang_init",
+
+  "optimizer": {
+    "type": "Adam",
+    "params": {
+      "lr": 0.001,
+      "betas": [0.9, 0.95],
+      "eps": 1.0e-8
+    }
+  },
+  "min_lr": 0.0001,
+
+  "zero_optimization": {
+    "stage": 0,
+    "allgather_partitions": true,
+    "allgather_bucket_size": 50000000,
+    "overlap_comm": true,
+    "reduce_scatter": true,
+    "reduce_bucket_size": 50000000,
+    "contiguous_gradients": true,
+    "cpu_offload": false
+  },
+
+  # batch size (trained on 2 gpus)
+  "train_micro_batch_size_per_gpu": 16,
+  #  "gas": 1,
+  "data-impl": "mmap",
+  "num_workers": 4,
+
+  # activation checkpointing
+  "checkpoint-activations": true,
+  "checkpoint-num-layers": 1,
+  "partition-activations": true,
+  "synchronize-each-layer": true,
+
+  # regularization
+  "gradient_clipping": 1.0,
+  "weight-decay": 0.1,
+  "hidden-dropout": 0,
+  "attention-dropout": 0,
+
+  # precision settings
+  "fp16": {
+    "fp16": false,
+    "enabled": false,
+    #"loss_scale": 0,
+    #"loss_scale_window": 1000,
+    #"initial_scale_power": 12,
+    #"hysteresis": 2,
+    # "min_loss_scale": 1
+  },
+
+  "train-iters": 4091,
+  "lr-decay-iters": 4091,
+  "distributed-backend": "nccl",
+  "lr-decay-style": "cosine",
+  "warmup": 0.01,
+  "checkpoint-factor": 1000,
+  "extra-save-iters": [0,1,2,4,8,16,32,64,128,256,512, 4091],
+  "eval-interval": 1000,
+  "eval-iters": 100,
+
+  "log-interval": 10,
+  "steps_per_print": 10,
+  "wall_clock_breakdown": true,
+
+  "train-data-paths": ["./data/processed/train_10M/train_10M_text_document"],
+  "valid-data-paths": ["./data/processed/dev/dev_text_document"],
+  "test-data-paths": ["./data/processed/test/test_text_document"],
+
+  "tokenizer-type": "GPT2BPETokenizer",
+  "vocab-file": "./data/gpt2-vocab.json",
+  "merge-file": "./data/gpt2-merges.txt",
+
+
+   "deepspeed": true,
+
+   "save": "./checkpoints-14m-2"
+}
+

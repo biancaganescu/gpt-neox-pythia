@@ -20,14 +20,7 @@ import argparse
 from tqdm import tqdm
 
 import torch
-from transformers import (
-    MistralConfig,
-    LlamaConfig,
-    GPTNeoXConfig,
-    AutoModelForCausalLM,
-    AutoConfig,
-    AutoModelForSequenceClassification,
-)
+from transformers import MistralConfig, LlamaConfig, GPTNeoXConfig, AutoModelForCausalLM, AutoConfig, AutoModelForSequenceClassification 
 
 from typing import List, Literal
 
@@ -47,7 +40,6 @@ Please investigate carefully whether your model is compatible with all architect
 
 (e.g. position embeddings such as AliBi may not be supported by Huggingface's GPT-NeoX architecture).
 """
-
 
 # Model definitions: a list of keys, and where they fall in terms of handling them in the presence of TP.
 # in format : {model arch: {param type: {param in neox: param in HF}}}
@@ -765,7 +757,7 @@ def convert(
 
 def main(input_args=None, overwrite_values=None):
     from huggingface_hub import create_repo, HfApi
-
+    
     parser = argparse.ArgumentParser(
         description="Merge MP partitions and convert to HF Model."
     )
@@ -826,7 +818,7 @@ def main(input_args=None, overwrite_values=None):
         "llama",
         "mistral",
     ], f"expected --architecture to be one of 'neox', 'mistral', 'llama', but got '{args.architecture}' !"
-
+    
     with open(args.config_file) as f:
         loaded_config = yaml.full_load(f)
         if overwrite_values:

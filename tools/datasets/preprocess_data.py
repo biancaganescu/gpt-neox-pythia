@@ -39,7 +39,7 @@ from megatron.tokenizer import build_tokenizer
 from megatron.data import indexed_dataset
 from threading import Semaphore
 
-
+num_tokens = 0
 class Encoder(object):
     def __init__(self, args):
         self.args = args
@@ -49,6 +49,7 @@ class Encoder(object):
         Encoder.tokenizer = build_tokenizer(self.args)
 
     def encode(self, text):
+        global num_tokens
         if self.args.ftfy:
             text = ftfy.fix_text(text)
         ids = {}
@@ -60,6 +61,7 @@ class Encoder(object):
             if self.args.append_eod:
                 doc_ids[-1].append(Encoder.tokenizer.eod)
             ids[key] = doc_ids
+            num_tokens += len(text_ids)
         return ids, len(text)
 
 
@@ -188,6 +190,7 @@ def main(input_args=None):
         pool = multiprocessing.Pool(args.workers, initializer=encoder.initializer)
         encoded_docs = pool.imap(encoder.encode, fin, chunksize=25)
     else:
+        print("single thread")
         encoder.initializer()
         encoded_docs = (encoder.encode(doc) for doc in fin)
 
@@ -243,4 +246,6 @@ def main(input_args=None):
 
 
 if __name__ == "__main__":
+    num_tokens = 0
     main()
+    print("Number of tokens: ", num_tokens)
